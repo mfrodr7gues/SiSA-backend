@@ -83,6 +83,6 @@ Consulte `docs/ALTERACOES_V2.md` para atualizar e testar sem perder dados e
 
 A aplicação continua sendo **somente backend**: as telas React não fazem parte deste ZIP.
 
-## Permissões do administrador (revisão 3)
+## Permissões do administrador 
 
 O administrador possui permissões acumulativas: pode atuar como participante, como organizador e executar as operações administrativas. Assim, pode se inscrever em eventos, gerenciar atividades, registrar frequência e acessar seus próprios certificados. A ação `POST /api/v1/admin/users/{id}/change-role/` permite promover um organizador a administrador ou rebaixá-lo a participante. Antes do rebaixamento, todos os eventos ativos/futuros sob responsabilidade do organizador devem ser transferidos para outro organizador ativo.
