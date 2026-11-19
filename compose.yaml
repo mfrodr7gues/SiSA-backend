@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sisa}
+      POSTGRES_USER: ${POSTGRES_USER:-sisa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configure POSTGRES_PASSWORD no arquivo .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:8002:8000"
+    volumes:
+      - media_data:/app/media
+      - certificate_data:/app/private_certificates
+      - static_data:/app/staticfiles
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["/app/scripts/start.sh"]
+  scheduler:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - media_data:/app/media
+      - certificate_data:/app/private_certificates
+    depends_on:
+      db:
+        condition: service_healthy
+      web:
+        condition: service_started
+    command: ["/app/scripts/scheduler.sh"]
+volumes:
+  postgres_data:
+  media_data:
+  static_data:
+  certificate_data:
